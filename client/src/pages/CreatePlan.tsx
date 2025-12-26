@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { api } from "@shared/routes";
-import { ArrowLeft, Loader2, Leaf, WheatOff, Users, Calendar, AlertCircle } from "lucide-react";
+import { ArrowLeft, Loader2, Leaf, WheatOff, Users, Calendar, AlertCircle, Plus, ChefHat } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
