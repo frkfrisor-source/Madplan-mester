@@ -29,21 +29,11 @@ export function useMealPlan(id: number | null) {
       return api.mealPlans.get.responses[200].parse(await res.json());
     },
     // Poll every 2 seconds if the plan is still processing
-    refetchInterval: (data) => {
-      // Accessing the deeply nested plan object safely
-      // @ts-ignore - type inference gets tricky with the Zod schema wrapper sometimes, but structure is known
-      const status = data?.plan?.dietaryPreferences?.status; 
-      // Note: Schema defines status on the response object wrapper or we infer it from existence of meals?
-      // Actually, looking at routes.ts: 
-      // 201 response has status.
-      // 200 response has { plan, meals, shoppingList }.
-      // If meals array is empty, it might still be generating or failed?
-      // The schema doesn't explicitly put 'status' on the `mealPlans` table, 
-      // but the 201 response implies a status workflow. 
-      // We will check if meals are empty as a proxy for 'processing' if status isn't on the plan object.
-      // However, for a real robust app, we'd add 'status' to the table. 
-      // Assuming 'meals.length === 0' means processing.
-      return (data && data.meals.length === 0) ? 2000 : false;
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      // Check if data exists and has meals array before accessing length
+      if (!data || !data.meals) return 2000; // Keep polling if no data yet
+      return data.meals.length === 0 ? 2000 : false;
     }
   });
 }

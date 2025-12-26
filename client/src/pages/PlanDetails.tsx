@@ -20,7 +20,7 @@ export default function PlanDetails() {
   
   const [activeTab, setActiveTab] = useState<'meals' | 'shopping'>('meals');
 
-  if (isLoading || (data && data.meals.length === 0)) {
+  if (isLoading || (data && (!data.meals || data.meals.length === 0))) {
     return (
       <Layout>
         <LoadingState message="Vi sammensætter din menu..." />
