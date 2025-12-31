@@ -28,6 +28,8 @@ export default function CreatePlan() {
         allergies: [],
         servings: 2,
         days: 7,
+        includeBreakfast: true,
+        includeLunch: true,
       }
     }
   });
@@ -71,6 +73,43 @@ export default function CreatePlan() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           
+          {/* Meal Types Section */}
+          <section className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+            <h2 className="text-lg font-bold font-display mb-4 flex items-center gap-2">
+              <ChefHat className="w-5 h-5 text-primary" />
+              Måltider
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4">Vælg hvilke måltider du vil have med i din plan. Aftensmad er altid inkluderet.</p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className={cn(
+                "flex items-center justify-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200",
+                preferences.includeBreakfast ? "border-primary bg-primary/5 text-primary font-semibold" : "border-border hover:border-primary/50"
+              )}>
+                <input 
+                  type="checkbox" 
+                  className="hidden"
+                  checked={preferences.includeBreakfast}
+                  onChange={(e) => setValue("preferences.includeBreakfast", e.target.checked)}
+                />
+                Morgenmad
+              </label>
+
+              <label className={cn(
+                "flex items-center justify-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200",
+                preferences.includeLunch ? "border-primary bg-primary/5 text-primary font-semibold" : "border-border hover:border-primary/50"
+              )}>
+                <input 
+                  type="checkbox" 
+                  className="hidden"
+                  checked={preferences.includeLunch}
+                  onChange={(e) => setValue("preferences.includeLunch", e.target.checked)}
+                />
+                Frokost
+              </label>
+            </div>
+          </section>
+
           {/* Dietary Section */}
           <section className="bg-card rounded-2xl p-6 border border-border shadow-sm">
             <h2 className="text-lg font-bold font-display mb-4 flex items-center gap-2">

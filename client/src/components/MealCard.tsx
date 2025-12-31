@@ -59,7 +59,7 @@ export function MealCard({ meal }: MealCardProps) {
             )}
           </div>
           
-          <h3 className="text-lg font-bold font-display text-foreground leading-tight truncate">
+          <h3 className="text-lg font-bold font-display text-foreground leading-tight">
             {meal.name}
           </h3>
           

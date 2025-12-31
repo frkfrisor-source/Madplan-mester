@@ -43,6 +43,12 @@ export async function registerRoutes(
       // 2. Generate content using OpenAI (async but we await for this MVP simplicity)
       // In a real production app, this should be a background job.
       
+      // Determine which meals to include
+      const mealTypes: string[] = [];
+      if (preferences.includeBreakfast) mealTypes.push('morgenmad (breakfast)');
+      if (preferences.includeLunch) mealTypes.push('frokost (lunch)');
+      mealTypes.push('aftensmad (dinner)'); // Always included
+
       const prompt = `
         Du er en erfaren dansk kok og ernæringsekspert. Lav en madplan for ${preferences.days} dage til en person med følgende præferencer:
         - Vegansk: ${preferences.isVegan ? 'Ja' : 'Nej'}
@@ -50,6 +56,7 @@ export async function registerRoutes(
         - Glutenfri: ${preferences.isGlutenFree ? 'Ja' : 'Nej'}
         - Allergier: ${preferences.allergies.join(', ') || 'Ingen'}
         - Antal portioner: ${preferences.servings}
+        - Måltider der skal inkluderes: ${mealTypes.join(', ')}
 
         Formatér svaret som JSON med følgende struktur:
         {
@@ -77,7 +84,7 @@ export async function registerRoutes(
         Vigtigt: 
         1. Svar KUN med JSON. 
         2. Alle tekster SKAL være på dansk.
-        3. Lav 3 måltider per dag (morgenmad, frokost, aftensmad).
+        3. Lav KUN de måltider der er angivet ovenfor: ${mealTypes.length} måltid(er) per dag.
       `;
 
       try {

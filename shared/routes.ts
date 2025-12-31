@@ -33,6 +33,8 @@ export const api = {
           allergies: z.array(z.string()),
           servings: z.number().min(1).max(20),
           days: z.number().min(1).max(14).default(7),
+          includeBreakfast: z.boolean().default(true),
+          includeLunch: z.boolean().default(true),
         })
       }),
       responses: {
