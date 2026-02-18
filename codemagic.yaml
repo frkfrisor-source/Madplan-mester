@@ -1,6 +1,6 @@
 workflows:
   ios-workflow:
-    name: iOS workflow
+    name: ios workflow
     max_build_duration: 60
 
     environment:
@@ -22,11 +22,11 @@ workflows:
 
       - name: Build IPA
         script: |
-          cd ios
+          cd ios/App
           xcode-project build-ipa \
-            --workspace App.xcworkspace \
+            --workspace App.xcodeproj/project.xcworkspace \
             --scheme App
 
     artifacts:
-      - ios/build/ios/ipa/*.ipa
+      - ios/build/**/*.ipa
 
