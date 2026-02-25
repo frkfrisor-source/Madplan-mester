@@ -1,9 +1,12 @@
- workflows:
+workflows:
   ios-workflow:
     name: iOS workflow
     max_build_duration: 60
 
     environment:
+      groups:
+        - appstore
+
       xcode: latest
       cocoapods: default
 
