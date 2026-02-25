@@ -37,8 +37,33 @@ workflows:
           fi
           npx cap sync ios
 
-      - name: Verify workspace exists
+      - name: Verify iOS project exists (project OR workspace)
         script: |
           cd "$PROJECT_DIR"
+          echo "Listing ios/App:"
           ls -la ios/App || true
+          echo "Looking for App.xcodeproj / App.xcworkspace:"
+          ls -la ios/App/App.xcodeproj || true
           ls -la ios/App/App.xcworkspace || true
+
+      - name: Build iOS IPA (use xcodeproj if workspace is missing)
+        script: |
+          cd "$PROJECT_DIR"
+
+          if [ -d "ios/App/App.xcworkspace" ]; then
+            echo "Workspace found -> building via workspace"
+            xcode-project build-ipa \
+              --workspace ios/App/App.xcworkspace \
+              --scheme App
+          else
+            echo "No workspace -> building via xcodeproj"
+            xcode-project build-ipa \
+              --project ios/App/App.xcodeproj \
+              --scheme App
+          fi
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - ios/App/build/**/*.app
+      - ios/App/build/**/*.dSYM
