@@ -1,6 +1,6 @@
 workflows:
   ios-workflow:
-    name: ios workflow
+    name: iOS workflow
     max_build_duration: 60
 
     environment:
@@ -9,24 +9,19 @@ workflows:
 
     scripts:
       - name: Install dependencies
-        script: |
-          npm install
+        script: npm install
 
       - name: Build web
-        script: |
-          npm run build
+        script: npm run build
 
       - name: Sync Capacitor
-        script: |
-          npx cap sync ios
-
-      - name: Build IPA
-        script: |
-          cd ios/App
-          xcode-project build-ipa \
-            --workspace App.xcodeproj/project.xcworkspace \
-            --scheme App
+        script: npx cap sync ios
 
     artifacts:
-      - ios/build/**/*.ipa
+      - ios/App/build/**/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - frkfrisor@gmail.com
 
