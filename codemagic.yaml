@@ -1,4 +1,4 @@
-workflows:
+ workflows:
   ios-workflow:
     name: iOS workflow
     max_build_duration: 60
@@ -44,6 +44,31 @@ workflows:
           ls -la ios/App/App.xcworkspace || true
           ls -la ios/App/App.xcodeproj || true
 
+      - name: Create export options plist (fix missing file)
+        script: |
+          cat > /Users/builder/export_options.plist <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>destination</key>
+            <string>export</string>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+            <key>uploadBitcode</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+          echo "Created /Users/builder/export_options.plist"
+          ls -la /Users/builder/export_options.plist
+
       - name: Build iOS IPA
         script: |
           cd "$PROJECT_DIR"
@@ -51,9 +76,11 @@ workflows:
           if [ -d "ios/App/App.xcworkspace" ]; then
             xcode-project build-ipa \
               --workspace ios/App/App.xcworkspace \
-              --scheme App
+              --scheme App \
+              --export-options-plist /Users/builder/export_options.plist
           else
             xcode-project build-ipa \
               --project ios/App/App.xcodeproj \
-              --scheme App
+              --scheme App \
+              --export-options-plist /Users/builder/export_options.plist
           fi
