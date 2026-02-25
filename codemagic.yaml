@@ -9,19 +9,30 @@ workflows:
 
     scripts:
       - name: Install dependencies
-        script: npm install
+        script: |
+          cd client
+          npm ci || npm install
 
       - name: Build web
-        script: npm run build
+        script: |
+          cd client
+          npm run build
 
-      - name: Sync Capacitor
-        script: npx cap sync ios
+      - name: Sync Capacitor (generér ios/App/App.xcworkspace)
+        script: |
+          cd client
+          npx cap sync ios
 
-    artifacts:
-      - ios/App/build/**/*.ipa
+      - name: Verify workspace exists
+        script: |
+          ls -la ios/App || true
+          ls -la ios/App/App.xcworkspace || true
 
-    publishing:
-      email:
-        recipients:
-          - frkfrisor@gmail.com
-
+      - name: Build iOS archive (workspace)
+        script: |
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -archivePath build/App.xcarchive \
+            archive
