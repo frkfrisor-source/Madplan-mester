@@ -7,6 +7,10 @@
       xcode: latest
       cocoapods: default
 
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: dk.tina.madplanmester
+
     scripts:
       - name: Detect Capacitor project dir
         script: |
@@ -37,37 +41,10 @@
           fi
           npx cap sync ios
 
-      - name: Verify workspace exists
+      - name: Set up code signing
         script: |
           cd "$PROJECT_DIR"
-          ls -la ios/App || true
-          ls -la ios/App/App.xcworkspace || true
-          ls -la ios/App/App.xcodeproj || true
-
-      - name: Create export options plist (fix missing file)
-        script: |
-          cat > /Users/builder/export_options.plist <<'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store</string>
-            <key>signingStyle</key>
-            <string>automatic</string>
-            <key>destination</key>
-            <string>export</string>
-            <key>stripSwiftSymbols</key>
-            <true/>
-            <key>compileBitcode</key>
-            <false/>
-            <key>uploadBitcode</key>
-            <false/>
-          </dict>
-          </plist>
-          EOF
-          echo "Created /Users/builder/export_options.plist"
-          ls -la /Users/builder/export_options.plist
+          xcode-project use-profiles
 
       - name: Build iOS IPA
         script: |
@@ -77,10 +54,10 @@
             xcode-project build-ipa \
               --workspace ios/App/App.xcworkspace \
               --scheme App \
-              --export-options-plist /Users/builder/export_options.plist
+              --export-method app-store
           else
             xcode-project build-ipa \
               --project ios/App/App.xcodeproj \
               --scheme App \
-              --export-options-plist /Users/builder/export_options.plist
+              --export-method app-store
           fi
