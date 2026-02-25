@@ -46,21 +46,20 @@ workflows:
           ls -la ios/App/App.xcodeproj || true
           ls -la ios/App/App.xcworkspace || true
 
-      - name: Build iOS IPA (use xcodeproj if workspace is missing)
-        script: |
+       - name: Build iOS IPA
+         script: |
           cd "$PROJECT_DIR"
-
-          if [ -d "ios/App/App.xcworkspace" ]; then
-            echo "Workspace found -> building via workspace"
-            xcode-project build-ipa \
-              --workspace ios/App/App.xcworkspace \
-              --scheme App
-          else
-            echo "No workspace -> building via xcodeproj"
-            xcode-project build-ipa \
-              --project ios/App/App.xcodeproj \
-              --scheme App
-          fi
+        if [ -d "ios/App/App.xcworkspace" ]; then
+          xcode-project build-ipa \
+        --workspace ios/App/App.xcworkspace \
+        --scheme App \
+        --export-method app-store
+       else
+        xcode-project build-ipa \
+        --project ios/App/App.xcodeproj \
+        --scheme App \
+        --export-method app-store
+      fi   
 
     artifacts:
       - build/ios/ipa/*.ipa
