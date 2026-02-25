@@ -8,31 +8,37 @@ workflows:
       cocoapods: default
 
     scripts:
+      - name: Detect Capacitor project dir
+        script: |
+          if [ -f "client/capacitor.config.ts" ] || [ -f "client/capacitor.config.json" ] || [ -f "client/capacitor.config.js" ]; then
+            echo "Using client/ as project dir"
+            echo "PROJECT_DIR=client" >> $CM_ENV
+          else
+            echo "Using repo root as project dir"
+            echo "PROJECT_DIR=." >> $CM_ENV
+          fi
+
       - name: Install dependencies
         script: |
-          cd client
+          cd "$PROJECT_DIR"
           npm ci || npm install
 
       - name: Build web
         script: |
-          cd client
+          cd "$PROJECT_DIR"
           npm run build
 
-      - name: Sync Capacitor (generér ios/App/App.xcworkspace)
+      - name: Ensure iOS platform exists + Sync Capacitor
         script: |
-          cd client
+          cd "$PROJECT_DIR"
+          if [ ! -d "ios" ]; then
+            echo "ios/ folder not found -> adding iOS platform"
+            npx cap add ios
+          fi
           npx cap sync ios
 
       - name: Verify workspace exists
         script: |
+          cd "$PROJECT_DIR"
           ls -la ios/App || true
           ls -la ios/App/App.xcworkspace || true
-
-      - name: Build iOS archive (workspace)
-        script: |
-          xcodebuild \
-            -workspace ios/App/App.xcworkspace \
-            -scheme App \
-            -configuration Release \
-            -archivePath build/App.xcarchive \
-            archive
