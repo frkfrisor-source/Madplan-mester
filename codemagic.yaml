@@ -39,28 +39,35 @@ workflows:
         script: |
           cd "$PROJECT_DIR"
           if [ ! -d "ios" ]; then
-            echo "ios/ folder not found -> adding iOS platform"
             npx cap add ios
           fi
           npx cap sync ios
 
-      - name: Set up code signing
+      - name: Apply signing profiles
         script: |
           cd "$PROJECT_DIR"
           xcode-project use-profiles
 
-      - name: Build iOS IPA
+      - name: Build iOS archive
         script: |
-          cd "$PROJECT_DIR"
+          cd "$PROJECT_DIR/ios/App"
 
-          if [ -d "ios/App/App.xcworkspace" ]; then
-            xcode-project build-ipa \
-              --workspace ios/App/App.xcworkspace \
-              --scheme App \
-              --export-method appstore
-          else
-            xcode-project build-ipa \
-              --project ios/App/App.xcodeproj \
-              --scheme App \
-              --export-method appstore
-          fi
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -archivePath build/App.xcarchive \
+            clean archive
+
+      - name: Export IPA
+        script: |
+          cd "$PROJECT_DIR/ios/App"
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/App.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist exportOptions.plist
+
+    artifacts:
+      - ios/App/build/*.ipa
