@@ -57,10 +57,10 @@ workflows:
             xcode-project build-ipa \
               --workspace ios/App/App.xcworkspace \
               --scheme App \
-              --export-method app-store
+              --export-method appstore
           else
             xcode-project build-ipa \
               --project ios/App/App.xcodeproj \
               --scheme App \
-              --export-method app-store
+              --export-method appstore
           fi
